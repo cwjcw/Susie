@@ -43,8 +43,8 @@ Next:
 
 - Stage 6: complete and validate the Windows installer, icons, shortcuts, tray, uninstall, and
   packaged-app behavior.
-- Run the final full validation suite and publish each completed stage to the `Susie` GitHub
-  repository.
+- Run the final full validation suite and keep each subsequent stage synchronized with the
+  `Susie` GitHub repository.
 
 ### Continue development on another Windows PC
 
@@ -55,9 +55,13 @@ Requirements:
 - pnpm `10.33.4` (the repository pins this version through `packageManager`).
 - Enough free memory/pagefile space for Electron production builds.
 
-Clone the `Susie` repository, switch to `dev`, and run:
+Clone the private `Susie` repository with your authenticated GitHub account, switch to `dev`, and
+run:
 
 ```powershell
+git clone https://github.com/cwjcw/Susie.git
+Set-Location Susie
+git switch dev
 corepack enable
 pnpm install
 pnpm run installRuntime
