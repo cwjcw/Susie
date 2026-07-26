@@ -378,7 +378,24 @@
     }
   },
   "newThread": {
-    "title": "构建与探索"
+    "title": "今天想做什么？",
+    "shortcuts": {
+      "summary": {
+        "title": "总结内容",
+        "prompt": "请帮我总结以下内容："
+      },
+      "writing": {
+        "title": "写作助手",
+        "prompt": "请帮我写……"
+      },
+      "analyzeFile": {
+        "title": "分析文件",
+        "prompt": "请帮我分析这个文件："
+      },
+      "freeChat": {
+        "title": "自由对话"
+      }
+    }
   },
   "floatingWidget": {
     "title": "任务总览",

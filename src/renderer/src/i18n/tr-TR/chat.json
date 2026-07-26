@@ -310,7 +310,24 @@
     }
   },
   "newThread": {
-    "title": "İnşa edin ve keşfedin"
+    "title": "What would you like to do today?",
+    "shortcuts": {
+      "summary": {
+        "title": "Summarize content",
+        "prompt": "Please help me summarize the following content:"
+      },
+      "writing": {
+        "title": "Writing assistant",
+        "prompt": "Please help me write..."
+      },
+      "analyzeFile": {
+        "title": "Analyze a file",
+        "prompt": "Please help me analyze this file:"
+      },
+      "freeChat": {
+        "title": "Free conversation"
+      }
+    }
   },
   "floatingWidget": {
     "title": "Göreve Genel Bakış",

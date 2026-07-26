@@ -12,7 +12,9 @@
           <img src="@/assets/logo-dark.png" class="w-14 h-14" loading="lazy" />
         </div>
 
-        <!-- Heading -->
+        <p class="mb-1 text-sm font-medium text-muted-foreground">
+          {{ productBrand.appName }}
+        </p>
         <h1 class="text-3xl font-semibold text-foreground mb-4">
           {{ t('chat.newThread.title') }}
         </h1>
@@ -94,6 +96,25 @@
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <div class="mb-5 grid w-full max-w-4xl grid-cols-2 gap-3">
+          <Button
+            v-for="shortcut in promptShortcuts"
+            :key="shortcut.key"
+            :data-testid="`new-thread-shortcut-${shortcut.key}`"
+            type="button"
+            variant="outline"
+            class="h-20 justify-start gap-3 rounded-xl px-4 text-left shadow-none hover:border-primary/35"
+            @click="applyPromptShortcut(shortcut.key)"
+          >
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+              <Icon :icon="shortcut.icon" class="size-4 text-primary" />
+            </span>
+            <span class="min-w-0 truncate text-sm font-medium">
+              {{ t(shortcut.titleKey) }}
+            </span>
+          </Button>
+        </div>
 
         <!-- Input area -->
         <div ref="firstChatGuideHostRef" :class="['w-full max-w-4xl flex justify-center']">
@@ -214,6 +235,7 @@ import { isAbortError } from '@/lib/errors'
 import { isImageAttachment } from '@shared/utils/attachmentRepresentation'
 import { useSpeechRecognition } from '@/components/chat/composables/useSpeechRecognition'
 import { cancelChatInputHeroFlight, prepareChatInputHeroFlight } from '@/lib/chatInputHero'
+import { productBrand } from '@shared/product'
 
 const projectStore = useProjectStore()
 const sessionStore = useSessionStore()
@@ -232,6 +254,7 @@ const switchModelGuide = useGuidedOnboardingStep('switch-model')
 const firstChatGuide = useGuidedOnboardingStep('first-chat')
 
 type SubmissionModelSelection = { providerId: string; modelId: string }
+type PromptShortcutKey = 'summary' | 'writing' | 'analyzeFile' | 'freeChat'
 type ActiveNewThreadSubmission = {
   submissionId: string
   cancelled: boolean
@@ -268,6 +291,52 @@ let draftDefaultsRequestSeq = 0
 let cancelEnsureDraftTask: (() => void) | null = null
 let voiceInputConfigToken = 0
 let attachmentFilterToken = 0
+
+const promptShortcuts = [
+  {
+    key: 'summary',
+    icon: 'lucide:list-collapse',
+    titleKey: 'chat.newThread.shortcuts.summary.title'
+  },
+  {
+    key: 'writing',
+    icon: 'lucide:pen-line',
+    titleKey: 'chat.newThread.shortcuts.writing.title'
+  },
+  {
+    key: 'analyzeFile',
+    icon: 'lucide:file-search',
+    titleKey: 'chat.newThread.shortcuts.analyzeFile.title'
+  },
+  {
+    key: 'freeChat',
+    icon: 'lucide:message-circle',
+    titleKey: 'chat.newThread.shortcuts.freeChat.title'
+  }
+] as const satisfies ReadonlyArray<{
+  key: PromptShortcutKey
+  icon: string
+  titleKey: string
+}>
+
+const applyPromptShortcut = async (key: PromptShortcutKey) => {
+  if (key === 'freeChat') {
+    await nextTick()
+    chatInputRef.value?.focusInput?.()
+    return
+  }
+
+  message.value = t(`chat.newThread.shortcuts.${key}.prompt`)
+  await nextTick()
+
+  if (key === 'analyzeFile') {
+    chatInputRef.value?.triggerAttach()
+    return
+  }
+
+  chatInputRef.value?.focusInput?.()
+}
+
 const availableAgents = computed(() => (Array.isArray(agentStore.agents) ? agentStore.agents : []))
 const hasDraftInput = computed(
   () =>

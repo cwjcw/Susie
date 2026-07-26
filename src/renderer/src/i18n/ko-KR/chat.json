@@ -307,7 +307,24 @@
     "failedTitle": "압축 실패"
   },
   "newThread": {
-    "title": "만들고 탐색하기"
+    "title": "What would you like to do today?",
+    "shortcuts": {
+      "summary": {
+        "title": "Summarize content",
+        "prompt": "Please help me summarize the following content:"
+      },
+      "writing": {
+        "title": "Writing assistant",
+        "prompt": "Please help me write..."
+      },
+      "analyzeFile": {
+        "title": "Analyze a file",
+        "prompt": "Please help me analyze this file:"
+      },
+      "freeChat": {
+        "title": "Free conversation"
+      }
+    }
   },
   "permissionMode": {
     "default": "기본 권한",

@@ -417,3 +417,19 @@ describe('NewThreadPage start deeplink prefill', () => {
     expect(sessionStore.createSession).toHaveBeenCalledTimes(2)
   }, 20000)
 })
+
+describe('NewThreadPage prompt shortcuts', () => {
+  it('fills the composer with the selected shortcut prompt', async () => {
+    const { wrapper } = await setup('deepseek-chat')
+
+    await wrapper.get('[data-testid="new-thread-shortcut-summary"]').trigger('click')
+    expect(wrapper.get('[data-testid="chat-input"]').text()).toContain(
+      'chat.newThread.shortcuts.summary.prompt'
+    )
+
+    await wrapper.get('[data-testid="new-thread-shortcut-writing"]').trigger('click')
+    expect(wrapper.get('[data-testid="chat-input"]').text()).toContain(
+      'chat.newThread.shortcuts.writing.prompt'
+    )
+  })
+})

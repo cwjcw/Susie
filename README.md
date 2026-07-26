@@ -24,6 +24,79 @@
   <a href="./README.zh.md">中文</a> / <a href="./README.md">English</a> / <a href="./README.jp.md">日本語</a>
 </div>
 
+## Kainice AI product status
+
+This repository is the Kainice AI Windows desktop product fork. It keeps DeepChat's existing
+provider, Ollama, chat, MCP, Skill, and ACP foundations so upstream changes can continue to be
+merged.
+
+Completed:
+
+- Stage 1: verified the DeepChat development, production-build, and Windows-packaging baseline.
+- Stage 2: added centralized Kainice AI branding for the app, window, tray, About page, and
+  installer.
+- Stage 3: added a dedicated desktop home experience with shortcuts and recent conversations.
+- Stage 4: simplified primary navigation and settings with reversible product feature flags.
+- Stage 5: improved the empty-conversation experience with four localized prompt shortcuts.
+
+Next:
+
+- Stage 6: complete and validate the Windows installer, icons, shortcuts, tray, uninstall, and
+  packaged-app behavior.
+- Run the final full validation suite and publish each completed stage to the `Susie` GitHub
+  repository.
+
+### Continue development on another Windows PC
+
+Requirements:
+
+- Windows 10/11 with Developer Mode enabled (required for dependency symlinks).
+- Node.js `>=24.14.1 <25`.
+- pnpm `10.33.4` (the repository pins this version through `packageManager`).
+- Enough free memory/pagefile space for Electron production builds.
+
+Clone the `Susie` repository, switch to `dev`, and run:
+
+```powershell
+corepack enable
+pnpm install
+pnpm run installRuntime
+pnpm run dev
+```
+
+If the network requires the local proxy used during the initial setup:
+
+```powershell
+$env:HTTP_PROXY = 'http://127.0.0.1:7890'
+$env:HTTPS_PROXY = 'http://127.0.0.1:7890'
+$env:NODE_USE_ENV_PROXY = '1'
+pnpm install
+pnpm run installRuntime
+```
+
+Validation and Windows packaging:
+
+```powershell
+pnpm run format
+pnpm run i18n
+pnpm run lint
+pnpm run typecheck
+pnpm test
+pnpm run build
+pnpm run build:win:x64
+```
+
+Product-level changes should stay concentrated in `src/product/`. Update
+`src/product/config/brand.json` to change branding and
+`src/product/config/features.json` to re-enable hidden advanced UI. Keep the current data schemas
+and DeepChat-compatible internals unchanged so future upstream merges remain practical.
+
+Git remote convention:
+
+- `origin`: the Kainice `Susie` repository.
+- `upstream`: `https://github.com/ThinkInAIXYZ/deepchat.git`.
+- Active development branch: `dev`.
+
 ## 📑 Table of Contents
 
 - [📑 Table of Contents](#-table-of-contents)
