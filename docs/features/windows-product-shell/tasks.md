@@ -9,4 +9,4 @@
 - [x] Add product feature flags and simplify navigation/settings.
 - [x] Add prompt shortcuts to the empty-conversation page.
 - [ ] Run lint, typecheck, tests, production build, and Windows package validation.
-- [ ] Configure Git remotes and publish the repository.
+- [x] Configure Git remotes and publish the repository.

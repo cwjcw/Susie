@@ -39,12 +39,27 @@ Completed:
 - Stage 4: simplified primary navigation and settings with reversible product feature flags.
 - Stage 5: improved the empty-conversation experience with four localized prompt shortcuts.
 
-Next:
+Verified at the handoff checkpoint:
 
-- Stage 6: complete and validate the Windows installer, icons, shortcuts, tray, uninstall, and
-  packaged-app behavior.
-- Run the final full validation suite and keep each subsequent stage synchronized with the
-  `Susie` GitHub repository.
+- Development startup, the original Windows packaging baseline, and production builds through
+  Stage 4 were verified on Windows.
+- Stage 5 passed i18n validation, lint, and all 8 focused `NewThreadPage` tests.
+- All Stage 1-5 source and documentation commits are synchronized to the private
+  `cwjcw/Susie` repository on branch `dev`.
+
+Pending when development resumes:
+
+- Run the latest full `typecheck`, test suite, and production build on the new computer.
+- Complete Stage 6 Windows packaging and verify the installer, app/taskbar/tray icons, Start menu
+  and desktop shortcuts, install/uninstall flow, single-instance behavior, window controls, tray
+  close behavior, notifications, persisted conversations, providers, and Ollama.
+- Update this status section, commit `fix: complete windows packaging experience`, and push
+  `dev` immediately after Stage 6 passes.
+
+The previous computer stopped before the latest full build because Windows reported approximately
+44 GB of abnormal kernel paged-pool usage, leaving too little commit memory for `tsgo` and
+`vue-tsgo`. This was an operating-system resource issue, not a reported TypeScript diagnostic.
+No Stage 6 package or remote GitHub Actions build should be treated as complete yet.
 
 ### Continue development on another Windows PC
 
@@ -89,6 +104,9 @@ pnpm test
 pnpm run build
 pnpm run build:win:x64
 ```
+
+After those commands pass, inspect the generated installer under `dist/`, install it, launch the
+packaged app, and complete the Stage 6 checks listed above before marking the phase complete.
 
 Product-level changes should stay concentrated in `src/product/`. Update
 `src/product/config/brand.json` to change branding and
