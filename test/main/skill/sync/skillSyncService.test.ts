@@ -1529,7 +1529,7 @@ describe('SkillSyncService', () => {
       expect(fs.promises.symlink).toHaveBeenCalledWith(
         '/home/user/.deepchat/skills/agent-only',
         '/home/user/.codex/skills/agent-only',
-        'dir'
+        process.platform === 'win32' ? 'junction' : 'dir'
       )
       expect(mockSkillService.registerAdoptedSkill).toHaveBeenCalledWith({
         name: 'agent-only',
@@ -1583,7 +1583,7 @@ describe('SkillSyncService', () => {
       expect(fs.promises.symlink).toHaveBeenCalledWith(
         '/home/user/.deepchat/skills/deepchat-skill',
         '/home/user/.codex/skills/deepchat-skill',
-        'dir'
+        process.platform === 'win32' ? 'junction' : 'dir'
       )
       expect(mockSkillService.registerAgentSkillLink).toHaveBeenCalledWith({
         skillName: 'deepchat-skill',

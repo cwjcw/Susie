@@ -29,8 +29,8 @@ describe('session boundary composition', () => {
       'utf8'
     )
 
-    expect(compositionSource).toContain(
-      'projectDatabase.newEnvironmentsTable.syncForSession(conversationId)\n      projectService.notifyEnvironmentProjectionChanged()'
+    expect(compositionSource).toMatch(
+      /projectDatabase\.newEnvironmentsTable\.syncForSession\(conversationId\)\r?\n\s+projectService\.notifyEnvironmentProjectionChanged\(\)/
     )
   })
 

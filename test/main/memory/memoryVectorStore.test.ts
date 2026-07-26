@@ -36,6 +36,11 @@ import { gzipSync } from 'node:zlib'
 
 const mutableApp = app as { isPackaged: boolean }
 
+function extractLoadedExtensionPath(loadSql: string): string | undefined {
+  const [, escapedPath] = loadSql.match(/LOAD '([^']+)'/) ?? []
+  return escapedPath?.replaceAll('\\\\', '\\').replaceAll("''", "'")
+}
+
 interface TestStore {
   connection: { run: ReturnType<typeof vi.fn> }
   vectorTable: string
@@ -1459,7 +1464,7 @@ describe('Legacy VSS loading', () => {
     try {
       await store.loadVss()
       const loadSql = store.connection.run.mock.calls[0][0] as string
-      const [, loadedPath] = loadSql.match(/LOAD '([^']+)'/) ?? []
+      const loadedPath = extractLoadedExtensionPath(loadSql)
 
       expect(loadedPath).toBeTruthy()
       const materializedPath = loadedPath!
@@ -1491,8 +1496,8 @@ describe('Legacy VSS loading', () => {
 
       const firstLoadSql = first.connection.run.mock.calls[0][0] as string
       const secondLoadSql = second.connection.run.mock.calls[0][0] as string
-      const [, firstLoadedPath] = firstLoadSql.match(/LOAD '([^']+)'/) ?? []
-      const [, secondLoadedPath] = secondLoadSql.match(/LOAD '([^']+)'/) ?? []
+      const firstLoadedPath = extractLoadedExtensionPath(firstLoadSql)
+      const secondLoadedPath = extractLoadedExtensionPath(secondLoadSql)
 
       expect(firstLoadedPath).toBeTruthy()
       expect(secondLoadedPath).toBe(firstLoadedPath)
@@ -1568,14 +1573,14 @@ describe('Legacy VSS loading', () => {
       const first = makeVssLoadableStore(undefined, path.join(userDataDir, 'a.duckdb'))
       await first.loadVss()
       const firstLoadSql = first.connection.run.mock.calls[0][0] as string
-      const [, firstLoadedPath] = firstLoadSql.match(/LOAD '([^']+)'/) ?? []
+      const firstLoadedPath = extractLoadedExtensionPath(firstLoadSql)
       expect(firstLoadedPath).toBeTruthy()
       actualFs.rmSync(firstLoadedPath!, { force: true })
 
       const second = makeVssLoadableStore(undefined, path.join(userDataDir, 'b.duckdb'))
       await second.loadVss()
       const secondLoadSql = second.connection.run.mock.calls[0][0] as string
-      const [, secondLoadedPath] = secondLoadSql.match(/LOAD '([^']+)'/) ?? []
+      const secondLoadedPath = extractLoadedExtensionPath(secondLoadSql)
 
       expect(secondLoadedPath).toBe(firstLoadedPath)
       expect(actualFs.readFileSync(secondLoadedPath!)).toEqual(
@@ -1641,7 +1646,7 @@ describe('Legacy VSS loading', () => {
       const second = makeVssLoadableStore(undefined, path.join(userDataDir, 'b.duckdb'))
       await second.loadVss()
       const loadSql = second.connection.run.mock.calls[0][0] as string
-      const [, loadedPath] = loadSql.match(/LOAD '([^']+)'/) ?? []
+      const loadedPath = extractLoadedExtensionPath(loadSql)
 
       expect(loadedPath).toBeTruthy()
       expect(actualFs.readFileSync(loadedPath!)).toEqual(Buffer.from('retry duckdb extension body'))
