@@ -1,3 +1,5 @@
+import { productFeatures } from './product'
+
 export interface SettingsNavigationItem {
   routeName:
     | 'settings-overview'
@@ -66,7 +68,7 @@ export const SETTINGS_NAVIGATION_GROUPS: Array<Omit<SettingsNavigationGroup, 'it
   },
   {
     key: 'models',
-    titleKey: 'settings.controlCenter.groups.models',
+    titleKey: 'common.productNavigation.models',
     position: 2
   },
   {
@@ -352,7 +354,43 @@ export const getSettingsNavigationItems = (
   platform?: string,
   arch?: string
 ): SettingsNavigationItem[] =>
-  getSettingsRouteItems(platform, arch).filter((item) => !item.hiddenInSidebar)
+  getSettingsRouteItems(platform, arch).filter((item) => {
+    const alwaysVisibleRoutes: SettingsNavigationItem['routeName'][] = [
+      'settings-overview',
+      'settings-common',
+      'settings-display',
+      'settings-provider',
+      'settings-database',
+      'settings-about'
+    ]
+
+    if (alwaysVisibleRoutes.includes(item.routeName)) {
+      return true
+    }
+    if (item.routeName === 'settings-mcp') {
+      return productFeatures.showMcp
+    }
+    if (item.routeName === 'settings-skills') {
+      return productFeatures.showSkills
+    }
+    if (item.routeName === 'settings-acp') {
+      return productFeatures.showAcp
+    }
+    if (item.routeName === 'settings-deepchat-agents') {
+      return productFeatures.showDeveloperTools
+    }
+    if (item.routeName === 'settings-plugins') {
+      return productFeatures.showPlugins
+    }
+    if (item.routeName === 'settings-remote') {
+      return productFeatures.showRemoteControl
+    }
+    if (item.hiddenInSidebar) {
+      return false
+    }
+
+    return productFeatures.showAdvancedSettings
+  })
 
 export const getSettingsNavigationGroups = (
   platform?: string,

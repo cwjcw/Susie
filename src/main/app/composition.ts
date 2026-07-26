@@ -1960,7 +1960,7 @@ export async function createMainProcessControl(dependencies: {
       }
 
       if (windowPresenter.getAllWindows().length === 0) {
-        void windowPresenter.createAppWindow({ initialRoute: 'chat' })
+        void windowPresenter.createAppWindow({ initialRoute: 'home' })
       }
     })
 
@@ -2317,7 +2317,7 @@ export async function createMainProcessControl(dependencies: {
   await agentSettings.retryPendingDeletedAgentSkillCleanup()
 
   if (windowPresenter.getAllWindows().length === 0) {
-    const windowId = await windowPresenter.createAppWindow({ initialRoute: 'chat' })
+    const windowId = await windowPresenter.createAppWindow({ initialRoute: 'home' })
     if (!windowId) {
       throw new Error('Failed to create initial app window')
     }

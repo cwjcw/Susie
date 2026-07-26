@@ -141,5 +141,12 @@
       "models": "Choose model",
       "localModels": "Local models"
     }
+  },
+  "productNavigation": {
+    "home": "Home",
+    "conversations": "Conversations",
+    "models": "Models",
+    "localModels": "Local models",
+    "settings": "Settings"
   }
 }

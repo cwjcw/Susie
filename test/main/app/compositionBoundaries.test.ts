@@ -259,17 +259,17 @@ describe('session boundary composition', () => {
       startupSource.indexOf('await runBuiltinMcpAllowlistCompatibilityMigration(')
     ).toBeLessThan(startupSource.indexOf('await initializeSkills()'))
     expect(startupSource.indexOf('await initializeSkills()')).toBeLessThan(
-      startupSource.indexOf("createAppWindow({ initialRoute: 'chat' })")
+      startupSource.indexOf("createAppWindow({ initialRoute: 'home' })")
     )
     expect(
       startupSource.indexOf('await agentSettings.retryPendingDeletedAgentSkillCleanup()')
-    ).toBeLessThan(startupSource.indexOf("createAppWindow({ initialRoute: 'chat' })"))
-    expect(startupSource.indexOf("createAppWindow({ initialRoute: 'chat' })")).toBeLessThan(
+    ).toBeLessThan(startupSource.indexOf("createAppWindow({ initialRoute: 'home' })"))
+    expect(startupSource.indexOf("createAppWindow({ initialRoute: 'home' })")).toBeLessThan(
       startupSource.indexOf('init(dependencies.startupRunId)')
     )
   })
 
-  it('does not let app activation create a chat window during startup migration', async () => {
+  it('does not let app activation create a window during startup migration', async () => {
     const { readFileSync } = await vi.importActual<typeof import('node:fs')>('node:fs')
     const compositionSource = readFileSync(
       path.resolve(process.cwd(), 'src/main/app/composition.ts'),
@@ -280,7 +280,7 @@ describe('session boundary composition', () => {
     const activateSource = compositionSource.slice(activateStart, activateEnd)
 
     expect(activateSource).toContain("if (appLifecycleState !== 'running') return")
-    expect(activateSource).toContain("createAppWindow({ initialRoute: 'chat' })")
+    expect(activateSource).toContain("createAppWindow({ initialRoute: 'home' })")
   })
 
   it('registers Plugin contributions before Skill migration through one startup barrier', async () => {

@@ -30,7 +30,7 @@ import { openExternalUrl } from '@/lib/externalUrl'
 import { activateAppOnMac } from '@/lib/activateApp'
 import { DEEPCHAT_EVENT_CHANNEL } from '@shared/contracts/channels'
 import { createDeepchatEventEnvelope } from '@shared/contracts/events'
-import { productBrand } from '@shared/product'
+import { productBrand, productFeatures } from '@shared/product'
 
 type PendingSettingsMessage = {
   channel: string
@@ -561,10 +561,7 @@ export class WindowPresenter implements IWindowPresenter {
   }): Promise<number | null> {
     return await this.createManagedWindow({
       initialTab: {
-        url:
-          options?.initialRoute === 'chat' || !options?.initialRoute
-            ? 'local://chat'
-            : `local://${options.initialRoute}`
+        url: options?.initialRoute ? `local://${options.initialRoute}` : 'local://home'
       },
       windowType: 'chat',
       x: options?.x,
@@ -689,7 +686,7 @@ export class WindowPresenter implements IWindowPresenter {
     this.updateContentProtection(appWindow, contentProtectionEnabled)
 
     // 开发模式下自动打开 DevTools
-    if (is.dev) {
+    if (is.dev && productFeatures.showDeveloperTools) {
       appWindow.webContents.openDevTools()
     }
 
@@ -907,21 +904,21 @@ export class WindowPresenter implements IWindowPresenter {
     // Standalone browser renderer has been removed. All windows load the main chat shell.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
       logger.info(
-        `Loading main renderer URL in dev mode: ${process.env['ELECTRON_RENDERER_URL']}#/chat`
+        `Loading main renderer URL in dev mode: ${process.env['ELECTRON_RENDERER_URL']}#/home`
       )
-      appWindow.loadURL(process.env['ELECTRON_RENDERER_URL'] + '#/chat')
+      appWindow.loadURL(process.env['ELECTRON_RENDERER_URL'] + '#/home')
     } else {
       logger.info(
         `Loading packaged main renderer file: ${join(__dirname, '../renderer/index.html')}`
       )
       appWindow.loadFile(join(__dirname, '../renderer/index.html'), {
-        hash: '/chat'
+        hash: '/home'
       })
     }
 
     // DevTools 不再自动打开，需要手动通过菜单或快捷键打开
     // 开发环境直接自动开启，方便排查
-    if (is.dev) {
+    if (is.dev && productFeatures.showDeveloperTools) {
       appWindow.webContents.openDevTools({ mode: 'detach' })
     }
 
@@ -1406,7 +1403,7 @@ export class WindowPresenter implements IWindowPresenter {
     )
 
     // Open DevTools in development mode
-    if (is.dev) {
+    if (is.dev && productFeatures.showDeveloperTools) {
       settingsWindow.webContents.openDevTools({ mode: 'detach' })
     }
 

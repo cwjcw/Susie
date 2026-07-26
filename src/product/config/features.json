@@ -1,0 +1,10 @@
+{
+  "showMcp": false,
+  "showSkills": false,
+  "showAcp": false,
+  "showDeveloperTools": false,
+  "showAgentNavigation": false,
+  "showPlugins": false,
+  "showRemoteControl": false,
+  "showAdvancedSettings": false
+}

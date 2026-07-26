@@ -7,51 +7,73 @@
     >
       <!-- Left Column: Agent Icons (48px) -->
       <div class="window-no-drag-region flex flex-col items-center shrink-0 pt-2 pb-2 gap-1 w-12">
-        <!-- All agents button -->
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <Button
-              data-testid="sidebar-agent-all-button"
-              data-agent-id="__all__"
-              :data-selected="String(sidebarSelectedAgentId === null)"
-              class="flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-150"
-              :class="
-                sidebarSelectedAgentId === null
-                  ? 'bg-card/50 border-white/70 dark:border-white/20 ring-1 ring-black/10 hover:bg-white/30 dark:hover:bg-white/10'
-                  : 'bg-transparent border-none hover:bg-white/30 dark:hover:bg-white/10 shadow-none'
-              "
-              @click="handleAgentSelect(null)"
-            >
-              <Icon icon="lucide:layers" class="w-4 h-4 text-foreground/80" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">{{ t('chat.sidebar.allAgents') }}</TooltipContent>
-        </Tooltip>
+        <template v-if="!productFeatures.showAgentNavigation">
+          <Tooltip v-for="item in productNavigationItems" :key="item.key">
+            <TooltipTrigger as-child>
+              <Button
+                :data-testid="`product-nav-${item.key}`"
+                class="flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-150 shadow-none"
+                :class="
+                  isProductNavigationActive(item.key)
+                    ? 'bg-card/70 border-border ring-1 ring-black/5 dark:ring-white/10'
+                    : 'bg-transparent border-transparent hover:bg-white/30 dark:hover:bg-white/10'
+                "
+                @click="item.action"
+              >
+                <Icon :icon="item.icon" class="w-4 h-4 text-foreground/80" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">{{ t(item.titleKey) }}</TooltipContent>
+          </Tooltip>
+        </template>
 
-        <div class="w-5 h-px bg-border my-1"></div>
+        <template v-else>
+          <!-- All agents button -->
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button
+                data-testid="sidebar-agent-all-button"
+                data-agent-id="__all__"
+                :data-selected="String(sidebarSelectedAgentId === null)"
+                class="flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-150"
+                :class="
+                  sidebarSelectedAgentId === null
+                    ? 'bg-card/50 border-white/70 dark:border-white/20 ring-1 ring-black/10 hover:bg-white/30 dark:hover:bg-white/10'
+                    : 'bg-transparent border-none hover:bg-white/30 dark:hover:bg-white/10 shadow-none'
+                "
+                @click="handleAgentSelect(null)"
+              >
+                <Icon icon="lucide:layers" class="w-4 h-4 text-foreground/80" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">{{ t('chat.sidebar.allAgents') }}</TooltipContent>
+          </Tooltip>
 
-        <!-- Agent icons -->
-        <Tooltip v-for="agent in agentStore.enabledAgents" :key="agent.id">
-          <TooltipTrigger as-child>
-            <Button
-              data-testid="sidebar-agent-button"
-              :data-agent-id="agent.id"
-              :data-agent-type="agent.agentType ?? agent.type"
-              :data-selected="String(sidebarSelectedAgentId === agent.id)"
-              size="icon"
-              class="flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-150"
-              :class="
-                sidebarSelectedAgentId === agent.id
-                  ? 'bg-card/50 border-white/80 dark:border-white/20 ring-1 ring-black/10 hover:bg-white/30 dark:hover:bg-white/10'
-                  : 'bg-transparent border-none hover:bg-white/30 dark:hover:bg-white/10 shadow-none'
-              "
-              @click="handleAgentSelect(agent.id)"
-            >
-              <AgentAvatar :agent="agent" class-name="w-4 h-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">{{ agent.name }}</TooltipContent>
-        </Tooltip>
+          <div class="w-5 h-px bg-border my-1"></div>
+
+          <!-- Agent icons -->
+          <Tooltip v-for="agent in agentStore.enabledAgents" :key="agent.id">
+            <TooltipTrigger as-child>
+              <Button
+                data-testid="sidebar-agent-button"
+                :data-agent-id="agent.id"
+                :data-agent-type="agent.agentType ?? agent.type"
+                :data-selected="String(sidebarSelectedAgentId === agent.id)"
+                size="icon"
+                class="flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-150"
+                :class="
+                  sidebarSelectedAgentId === agent.id
+                    ? 'bg-card/50 border-white/80 dark:border-white/20 ring-1 ring-black/10 hover:bg-white/30 dark:hover:bg-white/10'
+                    : 'bg-transparent border-none hover:bg-white/30 dark:hover:bg-white/10 shadow-none'
+                "
+                @click="handleAgentSelect(agent.id)"
+              >
+                <AgentAvatar :agent="agent" class-name="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">{{ agent.name }}</TooltipContent>
+          </Tooltip>
+        </template>
 
         <!-- Spacer -->
         <div class="flex-1"></div>
@@ -77,7 +99,7 @@
           <TooltipContent side="right">{{ t('chat.spotlight.placeholder') }}</TooltipContent>
         </Tooltip>
 
-        <Tooltip v-if="showRemoteControlButton">
+        <Tooltip v-if="productFeatures.showRemoteControl && showRemoteControlButton">
           <TooltipTrigger as-child>
             <Button
               data-testid="remote-control-button"
@@ -133,7 +155,7 @@
           }}</TooltipContent>
         </Tooltip>
 
-        <Tooltip>
+        <Tooltip v-if="productFeatures.showAgentNavigation">
           <TooltipTrigger as-child>
             <Button
               data-testid="app-settings-button"
@@ -161,7 +183,7 @@
         <!-- Header and command list -->
         <div class="shrink-0 px-3 pb-3 pt-3">
           <div class="truncate px-2 text-sm font-semibold text-foreground">
-            {{ selectedAgentName }}
+            {{ productFeatures.showAgentNavigation ? selectedAgentName : productBrand.shortName }}
           </div>
 
           <div class="mt-3 space-y-1">
@@ -214,6 +236,7 @@
             </button>
 
             <button
+              v-if="productFeatures.showPlugins"
               data-testid="app-plugins-button"
               type="button"
               class="flex h-9 w-full items-center gap-3 rounded-lg px-2 text-left text-sm transition-colors hover:bg-accent/60"
@@ -632,6 +655,7 @@ import WindowSideBarSessionItem from './WindowSideBarSessionItem.vue'
 import { useI18n } from 'vue-i18n'
 import { useSidebarStore } from '@/stores/ui/sidebar'
 import { useThemeStore } from '@/stores/theme'
+import { productBrand, productFeatures } from '@shared/product'
 
 type PinFeedbackMode = 'pinning' | 'unpinning'
 
@@ -1273,6 +1297,62 @@ watch(
 const openSettings = () => {
   void settingsClient.openSettings()
 }
+
+const openHome = () => {
+  void router.push({ name: 'home' })
+}
+
+const openConversations = () => {
+  void router.push({ name: 'chat' })
+}
+
+const openModels = () => {
+  void settingsClient.openSettings({ routeName: 'settings-provider' })
+}
+
+const openLocalModels = () => {
+  void settingsClient.openSettings({
+    routeName: 'settings-provider',
+    params: { providerId: 'ollama' }
+  })
+}
+
+const productNavigationItems = [
+  {
+    key: 'home',
+    icon: 'lucide:house',
+    titleKey: 'common.productNavigation.home',
+    action: openHome
+  },
+  {
+    key: 'conversations',
+    icon: 'lucide:messages-square',
+    titleKey: 'common.productNavigation.conversations',
+    action: openConversations
+  },
+  {
+    key: 'models',
+    icon: 'lucide:boxes',
+    titleKey: 'common.productNavigation.models',
+    action: openModels
+  },
+  {
+    key: 'localModels',
+    icon: 'lucide:hard-drive',
+    titleKey: 'common.productNavigation.localModels',
+    action: openLocalModels
+  },
+  {
+    key: 'settings',
+    icon: 'lucide:settings',
+    titleKey: 'common.productNavigation.settings',
+    action: openSettings
+  }
+] as const
+
+const isProductNavigationActive = (key: (typeof productNavigationItems)[number]['key']) =>
+  (key === 'home' && router.currentRoute.value.name === 'home') ||
+  (key === 'conversations' && router.currentRoute.value.name === 'chat')
 
 const openPlugins = () => {
   void router?.push({ name: 'plugins' })

@@ -18,6 +18,7 @@ import type { DesktopSettings } from './settings'
 import { getContextMenuLabels, type TranslationMap } from '@shared/i18n'
 import { is } from '@electron-toolkit/utils'
 import type { DeepchatEventPublisher } from '@shared/contracts/events'
+import { productBrand, productFeatures } from '@shared/product'
 
 const defaultMenuLabels: TranslationMap = {
   file: 'File',
@@ -37,7 +38,7 @@ const defaultMenuLabels: TranslationMap = {
   zoomOut: 'Zoom Out',
   resetZoom: 'Actual Size',
   quit: 'Quit',
-  showHide: 'Show/Hide DeepChat'
+  showHide: `Show/Hide ${productBrand.shortName}`
 }
 
 export class ShortcutPresenter implements IShortcutPresenter {
@@ -194,7 +195,7 @@ export class ShortcutPresenter implements IShortcutPresenter {
           this.createCommandItem(labels.resetZoom, this.shortcutKeys.ZoomResume, () => {
             this.publishEvent('appRuntime.shortcutRequested', { action: 'zoomResume' })
           }),
-          ...(is.dev
+          ...(is.dev && productFeatures.showDeveloperTools
             ? [
                 { type: 'separator' as const },
                 { role: 'reload' as const },

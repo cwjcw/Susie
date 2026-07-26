@@ -24,6 +24,7 @@ import { openExternalUrl } from '@/lib/externalUrl'
 import { getYoBrowserSession } from './browser/yoBrowserSession'
 import { DEEPCHAT_EVENT_CHANNEL } from '@shared/contracts/channels'
 import { createDeepchatEventEnvelope } from '@shared/contracts/events'
+import { productFeatures } from '@shared/product'
 
 export interface TabDesktopSessionBindingPort {
   unbind(webContentsId: number): void
@@ -180,7 +181,7 @@ export class TabPresenter implements ITabPresenter {
     }
 
     // 开发模式下自动打开 DevTools
-    if (is.dev) {
+    if (is.dev && productFeatures.showDeveloperTools) {
       view.webContents.openDevTools({ mode: 'detach' })
     }
 

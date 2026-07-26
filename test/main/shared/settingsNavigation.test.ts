@@ -5,6 +5,7 @@ import {
   getSettingsRouteItems,
   resolveSettingsNavigationPath
 } from '@shared/settingsNavigation'
+import { productFeatures } from '@shared/product'
 
 describe('settings navigation helpers', () => {
   it('resolves direct settings routes', () => {
@@ -20,6 +21,33 @@ describe('settings navigation helpers', () => {
       getSettingsNavigationItems().some((item) => item.routeName === 'settings-dashboard')
     ).toBe(false)
     expect(getSettingsNavigationGroups()[0]?.key).toBe('overview')
+  })
+
+  it('keeps advanced routes available while product flags hide them from the sidebar', () => {
+    expect(productFeatures.showMcp).toBe(false)
+    expect(productFeatures.showSkills).toBe(false)
+    expect(productFeatures.showAcp).toBe(false)
+    expect(productFeatures.showDeveloperTools).toBe(false)
+
+    const routeNames = getSettingsRouteItems().map((item) => item.routeName)
+    const navigationNames = getSettingsNavigationItems().map((item) => item.routeName)
+
+    expect(routeNames).toEqual(
+      expect.arrayContaining([
+        'settings-mcp',
+        'settings-skills',
+        'settings-acp',
+        'settings-deepchat-agents'
+      ])
+    )
+    expect(navigationNames).not.toEqual(
+      expect.arrayContaining([
+        'settings-mcp',
+        'settings-skills',
+        'settings-acp',
+        'settings-deepchat-agents'
+      ])
+    )
   })
 
   it('resolves provider routes with params', () => {
@@ -74,10 +102,10 @@ describe('settings navigation helpers', () => {
     )
   })
 
-  it('keeps OCR settings visible on unsupported OCR targets so the reason is discoverable', () => {
+  it('keeps the OCR route available while the product shell hides its advanced entry', () => {
     expect(
       getSettingsNavigationItems('linux', 'arm64').some((item) => item.routeName === 'settings-ocr')
-    ).toBe(true)
+    ).toBe(false)
     expect(resolveSettingsNavigationPath('settings-ocr', undefined, 'linux', 'arm64')).toBe('/ocr')
   })
 })

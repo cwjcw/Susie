@@ -42,6 +42,7 @@ type SetupOptions = {
   archivedProjectEnvironments?: Array<{ path: string }>
   defaultChatWorkspacePath?: string | null
   currentRouteName?: string
+  productShell?: boolean
 }
 
 const TEST_TIMEOUT_MS = 20000
@@ -392,6 +393,21 @@ const setup = async (options: SetupOptions = {}) => {
   vi.doMock('@/stores/ui/spotlight', () => ({
     useSpotlightStore: () => spotlightStore
   }))
+  vi.doMock('@shared/product', () => ({
+    productBrand: {
+      shortName: 'Kainice AI'
+    },
+    productFeatures: {
+      showMcp: false,
+      showSkills: false,
+      showAcp: false,
+      showDeveloperTools: false,
+      showAgentNavigation: !options.productShell,
+      showPlugins: !options.productShell,
+      showRemoteControl: !options.productShell,
+      showAdvancedSettings: false
+    }
+  }))
   vi.doMock('@api/SettingsClient', () => ({
     createSettingsClient: vi.fn(() => settingsClient)
   }))
@@ -534,6 +550,36 @@ const setup = async (options: SetupOptions = {}) => {
     projectStore
   }
 }
+
+describe('WindowSideBar product navigation', () => {
+  it(
+    'shows the simplified product rail while keeping advanced commands hidden',
+    async () => {
+      const { wrapper, router, settingsClient } = await setup({
+        productShell: true,
+        currentRouteName: 'home'
+      })
+
+      expect(wrapper.find('[data-testid="product-nav-home"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="product-nav-conversations"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="product-nav-models"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="product-nav-localModels"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="product-nav-settings"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="sidebar-agent-all-button"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="app-plugins-button"]').exists()).toBe(false)
+
+      await wrapper.get('[data-testid="product-nav-conversations"]').trigger('click')
+      expect(router.push).toHaveBeenCalledWith({ name: 'chat' })
+
+      await wrapper.get('[data-testid="product-nav-localModels"]').trigger('click')
+      expect(settingsClient.openSettings).toHaveBeenCalledWith({
+        routeName: 'settings-provider',
+        params: { providerId: 'ollama' }
+      })
+    },
+    TEST_TIMEOUT_MS
+  )
+})
 
 describe('WindowSideBar agent switch', () => {
   it(

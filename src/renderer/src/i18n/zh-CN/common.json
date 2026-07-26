@@ -141,5 +141,12 @@
       "models": "选择模型",
       "localModels": "本地模型"
     }
+  },
+  "productNavigation": {
+    "home": "首页",
+    "conversations": "对话",
+    "models": "模型",
+    "localModels": "本地模型",
+    "settings": "设置"
   }
 }
