@@ -8,6 +8,7 @@ import {
   type SupportedLocale
 } from '.'
 import { pluralRules } from './pluralRules'
+import { productBrand } from '@shared/product'
 
 export type RendererLanguageState = {
   requestedLanguage: string
@@ -25,6 +26,21 @@ const fallbackLanguageState: RendererLanguageState = {
   requestedLanguage: FALLBACK_LOCALE,
   locale: FALLBACK_LOCALE,
   direction: 'auto'
+}
+
+function applyProductBrand(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value.replaceAll(productBrand.legacyAppName, productBrand.appName)
+  }
+  if (Array.isArray(value)) {
+    return value.map(applyProductBrand)
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [key, applyProductBrand(nestedValue)])
+    )
+  }
+  return value
 }
 
 export async function createRendererI18n({
@@ -47,7 +63,7 @@ export async function createRendererI18n({
 
   let fallbackMessages: RendererLocaleMessages = {}
   try {
-    fallbackMessages = await fallbackMessagesPromise
+    fallbackMessages = applyProductBrand(await fallbackMessagesPromise) as RendererLocaleMessages
   } catch (error) {
     onError(`Failed to load fallback locale ${FALLBACK_LOCALE}:`, error)
   }
@@ -56,7 +72,9 @@ export async function createRendererI18n({
   let requestedMessages = fallbackMessages
   if (requestedLocale !== FALLBACK_LOCALE) {
     try {
-      requestedMessages = await requestedMessagesPromise
+      requestedMessages = applyProductBrand(
+        await requestedMessagesPromise
+      ) as RendererLocaleMessages
     } catch (error) {
       locale = FALLBACK_LOCALE
       onError(`Failed to load locale ${requestedLocale}:`, error)

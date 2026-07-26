@@ -1,5 +1,8 @@
 import logger from '@shared/logger'
+import { productBrand } from '@shared/product'
 import { app, dialog } from 'electron'
+import { existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { StartupWorkloadCoordinator } from './app/startupWorkloadCoordinator'
 import log from 'electron-log'
 import { registerWorkspacePreviewSchemes } from './workspace/workspacePreviewProtocol'
@@ -14,7 +17,6 @@ import { ensureRegularAppOnMac } from './lib/activateApp'
 import { startMainProcess, type MainProcessControl } from './app/mainProcess'
 
 let appStarted = false
-const APP_NAME = 'DeepChat'
 
 export function startApp(): void {
   if (appStarted) {
@@ -22,12 +24,20 @@ export function startApp(): void {
   }
   appStarted = true
 
+  app.setName(productBrand.appName)
+
   const e2eUserDataDir = process.env.DEEPCHAT_E2E_USER_DATA_DIR?.trim()
   if (e2eUserDataDir) {
     app.setPath('userData', e2eUserDataDir)
+  } else {
+    const brandedUserDataDir = app.getPath('userData')
+    const legacyUserDataDir = join(dirname(brandedUserDataDir), productBrand.legacyUserDataName)
+    if (!existsSync(brandedUserDataDir) && existsSync(legacyUserDataDir)) {
+      app.setPath('userData', legacyUserDataDir)
+      logger.info(`Using legacy ${productBrand.legacyUserDataName} user data directory.`)
+    }
   }
 
-  app.setName(APP_NAME)
   if (process.platform === 'darwin') {
     if (app.isReady()) {
       ensureRegularAppOnMac()
@@ -89,7 +99,7 @@ export function startApp(): void {
 
   const gotSingleInstanceLock = app.requestSingleInstanceLock()
   if (!gotSingleInstanceLock) {
-    logger.info('Another DeepChat instance is already running. Exiting current process.')
+    logger.info(`Another ${productBrand.appName} instance is already running. Exiting.`)
     app.quit()
     return
   }

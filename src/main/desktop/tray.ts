@@ -1,8 +1,9 @@
-import { Tray, Menu, app, nativeImage, NativeImage } from 'electron'
+import { Tray, Menu, app, nativeImage, NativeImage, type MenuItemConstructorOptions } from 'electron'
 import * as path from 'path'
 import { getContextMenuLabels } from '@shared/i18n'
 import type { IWindowPresenter } from '@shared/types/desktop'
 import type { DesktopSettings } from './settings'
+import { productBrand } from '@shared/product'
 
 export class TrayPresenter {
   private tray: Tray | null = null
@@ -35,31 +36,36 @@ export class TrayPresenter {
     }
 
     this.tray = new Tray(image)
-    this.tray.setToolTip('DeepChat')
+    this.tray.setToolTip(productBrand.appName)
 
     // 获取当前系统语言
     const locale = this.settings.getLanguage()
     const labels = getContextMenuLabels(locale)
-    const contextMenu = Menu.buildFromTemplate([
+    const contextMenuTemplate: MenuItemConstructorOptions[] = [
       {
         label: labels.open || '打开/隐藏',
         click: () => {
           this.windowPresenter.toggleMainWindowVisibility()
         }
       },
-      {
-        label: labels.checkForUpdates || '检查更新',
-        click: () => {
-          void this.openUpdateSettings()
-        }
-      },
+      ...(productBrand.enableUpdates
+        ? [
+            {
+              label: labels.checkForUpdates || '检查更新',
+              click: () => {
+                void this.openUpdateSettings()
+              }
+            }
+          ]
+        : []),
       {
         label: labels.quit || '退出',
         click: async () => {
           app.quit() // Exit trigger: tray menu
         }
       }
-    ])
+    ]
+    const contextMenu = Menu.buildFromTemplate(contextMenuTemplate)
 
     this.tray.setContextMenu(contextMenu)
 

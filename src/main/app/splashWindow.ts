@@ -17,6 +17,7 @@ import {
   type DatabaseUnlockReason
 } from '@shared/contracts/databaseSecurity'
 import { activateAppOnMac } from '@/lib/activateApp'
+import { productBrand } from '@shared/product'
 
 const SPLASH_SHOW_DELAY_MS = 200
 
@@ -444,7 +445,7 @@ export class SplashWindow {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DeepChat</title>
+    <title>${productBrand.appName}</title>
     <style>
       * { box-sizing: border-box; }
       html, body { width: 100%; height: 100%; margin: 0; background: #020817; color: #fff; overflow: hidden; }
@@ -467,7 +468,7 @@ export class SplashWindow {
   <body>
     <div class="shell">
       <form id="panel" class="panel">
-        <div class="title">DeepChat</div>
+        <div class="title">${productBrand.appName}</div>
         <div id="subtitle" class="subtitle">Unlocking local database</div>
         <label id="label" for="password" hidden>SQLite password</label>
         <input id="password" type="password" autocomplete="current-password" hidden />
@@ -476,7 +477,7 @@ export class SplashWindow {
           <button id="submit" class="primary" type="submit" disabled>Unlock</button>
           <button id="quit" type="button">Quit</button>
         </div>
-        <p id="hint" class="hint">DeepChat is reading the saved password from the system credential store.</p>
+        <p id="hint" class="hint">${productBrand.appName} is reading the saved password from the system credential store.</p>
       </form>
     </div>
     <script>
@@ -527,7 +528,7 @@ export class SplashWindow {
       splash && splash.onUnlockProgress((payload) => {
         if (payload && payload.active && !requestId) {
           subtitle.textContent = 'Unlocking local database'
-          hint.textContent = 'DeepChat is reading the saved password from the system credential store.'
+          hint.textContent = '${productBrand.appName} is reading the saved password from the system credential store.'
         }
       })
     </script>

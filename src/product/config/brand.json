@@ -1,0 +1,16 @@
+{
+  "appName": "Kainice AI",
+  "shortName": "Kainice AI",
+  "companyName": "Kainice",
+  "description": "Local-first AI desktop assistant",
+  "website": "https://kainice.ai",
+  "supportUrl": "https://kainice.ai/support",
+  "copyright": "Copyright © 2026 Kainice",
+  "logo": "src/product/assets/kainice-mark.svg",
+  "icon": "build/icon.ico",
+  "appId": "com.kainice.ai",
+  "executableName": "Kainice AI",
+  "legacyAppName": "DeepChat",
+  "legacyUserDataName": "DeepChat",
+  "enableUpdates": false
+}

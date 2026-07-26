@@ -30,6 +30,7 @@ import { openExternalUrl } from '@/lib/externalUrl'
 import { activateAppOnMac } from '@/lib/activateApp'
 import { DEEPCHAT_EVENT_CHANNEL } from '@shared/contracts/channels'
 import { createDeepchatEventEnvelope } from '@shared/contracts/events'
+import { productBrand } from '@shared/product'
 
 type PendingSettingsMessage = {
   channel: string
@@ -645,6 +646,7 @@ export class WindowPresenter implements IWindowPresenter {
           ).y
 
     const appWindow = new BrowserWindow({
+      title: productBrand.appName,
       width: managedWindowState.width,
       height: managedWindowState.height,
       x: initialX,
@@ -1315,7 +1317,7 @@ export class WindowPresenter implements IWindowPresenter {
       fullscreenable: false,
 
       icon: iconFile,
-      title: 'DeepChat - Settings',
+      title: `${productBrand.appName} - Settings`,
       titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : undefined,
       transparent: process.platform === 'darwin',
       vibrancy: process.platform === 'darwin' ? 'under-window' : undefined,

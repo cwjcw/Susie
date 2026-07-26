@@ -6,10 +6,15 @@ import svgLoader from 'vite-svg-loader'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor-esm'
 import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
+import brand from './src/product/config/brand.json'
 
 const isCustomElement = (tag: string) =>
   tag === 'voice-agent-widget' || tag.startsWith('ui-resource-renderer')
 const isVueDevToolsOverlayEnabled = process.env.DEEPCHAT_VUE_DEVTOOLS_OVERLAY !== '0'
+const productTitlePlugin = {
+  name: 'kainice-product-title',
+  transformIndexHtml: (html: string) => html.replaceAll('__PRODUCT_NAME__', brand.appName)
+}
 
 export default defineConfig({
   main: {
@@ -80,6 +85,7 @@ export default defineConfig({
       host: '0.0.0.0' // 防止代理干扰，导致vite-electron之间ws://localhost:5713和http://localhost:5713通信失败、页面组件无法加载
     },
     plugins: [
+      productTitlePlugin,
       tailwindcss(),
       monacoEditorPlugin({
         languageWorkers: [],

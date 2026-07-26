@@ -7,31 +7,31 @@
     <div class="flex min-h-[520px] w-full flex-col items-center justify-center gap-2">
       <img src="@/assets/logo.png" class="h-10 w-10" :alt="t('about.title')" />
       <div class="flex flex-col items-center gap-2" :dir="languageStore.dir">
-        <h1 class="text-2xl font-bold">{{ t('about.title') }}</h1>
+        <h1 class="text-2xl font-bold">{{ productBrand.appName }}</h1>
         <p class="pb-4 text-xs text-muted-foreground">v{{ appVersion }}</p>
         <p class="px-8 text-sm text-muted-foreground">
-          {{ t('about.description') }}
+          {{ productBrand.description }}
         </p>
         <div class="flex gap-2">
           <a
             class="flex items-center text-xs text-muted-foreground hover:text-primary"
-            href="https://deepchat.thinkinai.xyz/"
+            :href="productBrand.website"
             target="_blank"
             rel="noopener noreferrer"
-            @click.prevent="openExternalLink('https://deepchat.thinkinai.xyz/')"
+            @click.prevent="openExternalLink(productBrand.website)"
           >
             <Icon icon="lucide:globe" class="mr-1 h-3 w-3" />
             {{ t('about.website') }}</a
           >
           <a
             class="flex items-center text-xs text-muted-foreground hover:text-primary"
-            href="https://github.com/ThinkInAIXYZ/deepchat"
+            :href="productBrand.supportUrl"
             target="_blank"
             rel="noopener noreferrer"
-            @click.prevent="openExternalLink('https://github.com/ThinkInAIXYZ/deepchat')"
+            @click.prevent="openExternalLink(productBrand.supportUrl)"
           >
-            <Icon icon="lucide:github" class="mr-1 h-3 w-3" />
-            GitHub
+            <Icon icon="lucide:life-buoy" class="mr-1 h-3 w-3" />
+            {{ t('about.feedbackButton') }}
           </a>
           <a
             class="flex items-center text-xs text-muted-foreground hover:text-primary"
@@ -47,8 +47,9 @@
           </a>
         </div>
       </div>
+      <p class="mt-2 text-xs text-muted-foreground">{{ productBrand.copyright }}</p>
 
-      <div class="mt-4 flex items-center gap-4">
+      <div v-if="productBrand.enableUpdates" class="mt-4 flex items-center gap-4">
         <label class="text-sm font-medium">{{ t('about.updateChannel') }}:</label>
         <div class="min-w-32 max-w-48">
           <Select v-model="updateChannel" @update:model-value="setUpdateChannel">
@@ -68,7 +69,7 @@
       </div>
 
       <div
-        v-if="upgrade.shouldShowUpdateNotes"
+        v-if="productBrand.enableUpdates && upgrade.shouldShowUpdateNotes"
         class="mt-2 w-full max-w-xl rounded-xl border border-border/80 bg-card/70 p-4 shadow-sm"
       >
         <div class="text-sm font-medium">
@@ -88,7 +89,7 @@
       </div>
 
       <div
-        v-if="upgrade.showManualDownloadOptions"
+        v-if="productBrand.enableUpdates && upgrade.showManualDownloadOptions"
         class="mt-2 flex w-full max-w-xl flex-col items-center gap-1"
       >
         <p class="text-center text-xs text-muted-foreground">
@@ -104,7 +105,7 @@
           variant="outline"
           size="sm"
           class="mb-2 text-xs"
-          @click="openExternalLink('https://github.com/ThinkInAIXYZ/deepchat/discussions/1226')"
+          @click="openExternalLink(productBrand.supportUrl)"
         >
           <Icon icon="lucide:message-square" class="mr-1 h-3 w-3" />
           {{ t('about.feedbackButton') }}
@@ -162,7 +163,7 @@
         </Button>
 
         <Button
-          v-if="upgrade.showManualDownloadOptions"
+          v-if="productBrand.enableUpdates && upgrade.showManualDownloadOptions"
           variant="outline"
           size="sm"
           class="mb-2 text-xs"
@@ -172,7 +173,7 @@
         </Button>
 
         <Button
-          v-if="upgrade.showManualDownloadOptions"
+          v-if="productBrand.enableUpdates && upgrade.showManualDownloadOptions"
           variant="outline"
           size="sm"
           class="mb-2 text-xs"
@@ -182,7 +183,7 @@
         </Button>
 
         <Button
-          v-if="!upgrade.showManualDownloadOptions"
+          v-if="productBrand.enableUpdates && !upgrade.showManualDownloadOptions"
           variant="outline"
           size="sm"
           class="mb-2 text-xs"
@@ -273,6 +274,7 @@ import { useThemeStore } from '@/stores/theme'
 import { useToast } from '@/components/use-toast'
 import { useRoute } from 'vue-router'
 import SettingsPageShell from './control-center/SettingsPageShell.vue'
+import { productBrand } from '@shared/product'
 
 const { t } = useI18n()
 const { toast } = useToast()
@@ -419,18 +421,20 @@ const openExternalLink = (url: string) => {
 }
 
 onMounted(async () => {
-  cleanupCheckForUpdates = windowClient.onSettingsCheckForUpdates(() => {
-    void handleExternalCheckUpdate()
-  })
   appVersion.value = await deviceClient.getAppVersion()
-  updateChannel.value = await configClient.getUpdateChannel()
-  await syncUpdateStatus()
+  if (productBrand.enableUpdates) {
+    cleanupCheckForUpdates = windowClient.onSettingsCheckForUpdates(() => {
+      void handleExternalCheckUpdate()
+    })
+    updateChannel.value = await configClient.getUpdateChannel()
+    await syncUpdateStatus()
+  }
 })
 
 watch(
   () => route.name,
   async (routeName) => {
-    if (routeName === 'settings-about') {
+    if (productBrand.enableUpdates && routeName === 'settings-about') {
       await syncUpdateStatus()
     }
   }

@@ -188,7 +188,7 @@ describe('AboutUsSettings', () => {
     })
   })
 
-  it('renders fallback download actions in the bottom action row', async () => {
+  it('hides upstream update actions when product updates are disabled', async () => {
     const { default: AboutUsSettings } =
       await import('../../../src/renderer/settings/components/AboutUsSettings.vue')
 
@@ -222,21 +222,14 @@ describe('AboutUsSettings', () => {
       '模拟已下载更新',
       '模拟首次进入引导',
       '创建长会话Mock数据',
-      'GitHub 下载',
-      '官网下载',
       '关闭'
     ])
     expect(wrapper.text()).not.toContain('检查更新')
-
-    const officialButton = wrapper.findAll('button').find((button) => button.text() === '官网下载')
-    expect(officialButton).toBeTruthy()
-
-    await officialButton!.trigger('click')
-
-    expect(upgradeStoreMock.handleUpdate).toHaveBeenCalledWith('official')
+    expect(wrapper.text()).not.toContain('GitHub 下载')
+    expect(wrapper.text()).not.toContain('官网下载')
   })
 
-  it('subscribes to tray update checks before initial presenter calls resolve', async () => {
+  it('does not subscribe to upstream update checks when product updates are disabled', async () => {
     let resolveAppVersion: ((value: string) => void) | null = null
     deviceClientMock.getAppVersion.mockReturnValueOnce(
       new Promise<string>((resolve) => {
@@ -268,21 +261,15 @@ describe('AboutUsSettings', () => {
       }
     })
 
-    const handler = windowClientMock.onSettingsCheckForUpdates.mock.calls.at(-1)?.[0] as
-      | (() => Promise<void>)
-      | undefined
-    expect(handler).toBeTypeOf('function')
-
-    await handler?.()
-
-    expect(upgradeStoreMock.checkUpdate).toHaveBeenCalledWith(false)
+    expect(windowClientMock.onSettingsCheckForUpdates).not.toHaveBeenCalled()
+    expect(upgradeStoreMock.checkUpdate).not.toHaveBeenCalled()
 
     resolveAppVersion?.('1.0.0-beta.3')
     await flushPromises()
     wrapper.unmount()
   })
 
-  it('does not trigger install flow for external check requests when update is ready to install', async () => {
+  it('does not initialize update state when product updates are disabled', async () => {
     upgradeStoreMock.showManualDownloadOptions = false
     upgradeStoreMock.updateError = null
     upgradeStoreMock.isReadyToInstall = true
@@ -314,15 +301,10 @@ describe('AboutUsSettings', () => {
 
     await flushPromises()
 
-    const handler = windowClientMock.onSettingsCheckForUpdates.mock.calls.at(-1)?.[0] as
-      | (() => Promise<void>)
-      | undefined
-    expect(handler).toBeTypeOf('function')
-
-    await handler?.()
-
+    expect(windowClientMock.onSettingsCheckForUpdates).not.toHaveBeenCalled()
     expect(upgradeStoreMock.handleUpdate).not.toHaveBeenCalled()
     expect(upgradeStoreMock.checkUpdate).not.toHaveBeenCalled()
+    expect(upgradeStoreMock.refreshStatus).not.toHaveBeenCalled()
 
     wrapper.unmount()
   })

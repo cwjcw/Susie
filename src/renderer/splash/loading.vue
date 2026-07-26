@@ -2,7 +2,7 @@
   <div class="splash-shell">
     <div v-if="mode === 'unlock'" class="unlock-stage">
       <form class="unlock-panel" @submit.prevent="submitUnlock">
-        <div class="unlock-title">DeepChat</div>
+        <div class="unlock-title">{{ productBrand.appName }}</div>
         <div class="unlock-subtitle">Local database is encrypted</div>
         <label class="unlock-label" for="database-password">SQLite password</label>
         <input
@@ -32,24 +32,23 @@
 
     <div v-else-if="mode === 'system-unlock'" class="unlock-stage">
       <div class="unlock-panel">
-        <div class="unlock-title">DeepChat</div>
+        <div class="unlock-title">{{ productBrand.appName }}</div>
         <div class="unlock-subtitle">Unlocking local database</div>
         <p class="unlock-hint">
-          DeepChat is reading the saved password from the system credential store.
+          {{ productBrand.appName }} is reading the saved password from the system credential
+          store.
         </p>
       </div>
     </div>
 
     <div v-else class="loader-stage">
       <div class="loader-wrapper">
-        <span class="loader-letter">D</span>
-        <span class="loader-letter">e</span>
-        <span class="loader-letter">e</span>
-        <span class="loader-letter">p</span>
-        <span class="loader-letter">C</span>
-        <span class="loader-letter">h</span>
-        <span class="loader-letter">a</span>
-        <span class="loader-letter">t</span>
+        <span
+          v-for="(letter, index) in productBrand.shortName.replaceAll(' ', '')"
+          :key="`${letter}-${index}`"
+          class="loader-letter"
+          >{{ letter }}</span
+        >
         <div class="loader"></div>
       </div>
     </div>
@@ -70,7 +69,7 @@
     <div v-if="mode === 'loading'" class="logo-corner">
       <img
         src="@/assets/logo.png"
-        alt="DeepChat Logo"
+        :alt="`${productBrand.appName} logo`"
         class="logo-mark"
         style="filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.24))"
       />
@@ -84,6 +83,7 @@ import {
   type DatabaseUnlockProgressPayload,
   type DatabaseUnlockRequestPayload
 } from '@shared/contracts/databaseSecurity'
+import { productBrand } from '@shared/product'
 
 type SplashActivityStatus = 'running' | 'completed' | 'failed'
 
@@ -523,6 +523,9 @@ onBeforeUnmount(() => {
 }
 .loader-letter:nth-child(8) {
   animation-delay: 0.7s;
+}
+.loader-letter:nth-child(9) {
+  animation-delay: 0.8s;
 }
 
 @keyframes loader-letter-anim {
