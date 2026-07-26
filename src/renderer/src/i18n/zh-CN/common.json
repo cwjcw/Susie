@@ -124,5 +124,22 @@
     "none": "未关联项目",
     "recent": "最近项目",
     "openFolder": "打开文件夹..."
+  },
+  "productHome": {
+    "title": "首页",
+    "tagline": "你的本地 AI 工作助手",
+    "startConversation": "开始新对话",
+    "recentTitle": "最近对话",
+    "recentDescription": "从上次离开的地方继续。",
+    "viewAll": "查看全部",
+    "noRecent": "还没有对话",
+    "noRecentDescription": "开始一次对话，建立你的工作空间。",
+    "untitledConversation": "未命名对话",
+    "shortcuts": {
+      "newConversation": "新建对话",
+      "history": "打开历史",
+      "models": "选择模型",
+      "localModels": "本地模型"
+    }
   }
 }

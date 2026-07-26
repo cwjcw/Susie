@@ -5,7 +5,16 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/chat'
+      redirect: '/home'
+    },
+    {
+      path: '/home',
+      name: 'home',
+      component: () => import('@/product/pages/ProductHomePage.vue'),
+      meta: {
+        titleKey: 'common.productHome.title',
+        icon: 'lucide:house'
+      }
     },
     {
       path: '/chat',

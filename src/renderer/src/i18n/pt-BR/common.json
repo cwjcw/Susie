@@ -124,5 +124,22 @@
     "none": "Sem projeto",
     "recent": "Projetos recentes",
     "openFolder": "Abrir pasta..."
+  },
+  "productHome": {
+    "title": "Home",
+    "tagline": "Your local AI work assistant",
+    "startConversation": "Start a new conversation",
+    "recentTitle": "Recent conversations",
+    "recentDescription": "Continue where you left off.",
+    "viewAll": "View all",
+    "noRecent": "No conversations yet",
+    "noRecentDescription": "Start a conversation to build your workspace.",
+    "untitledConversation": "Untitled conversation",
+    "shortcuts": {
+      "newConversation": "New conversation",
+      "history": "Open history",
+      "models": "Choose model",
+      "localModels": "Local models"
+    }
   }
 }
