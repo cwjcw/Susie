@@ -1,7 +1,9 @@
 # Kainice AI 开发交接记录
 
-> GitHub 私有仓库：`https://github.com/cwjcw/Susie`  
-> 当前开发分支：`dev`  
+> GitHub 私有仓库：`https://github.com/cwjcw/Susie`
+>
+> 当前开发分支：`dev`
+>
 > 上游仓库：`https://github.com/ThinkInAIXYZ/deepchat.git`
 
 ## 已完成
