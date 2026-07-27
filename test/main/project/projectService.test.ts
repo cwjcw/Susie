@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import path from 'node:path'
 
 const { getPathMock, openPathMock, existsSyncMock, mkdirSyncMock } = vi.hoisted(() => ({
   getPathMock: vi.fn((name: string) => {
@@ -80,6 +81,8 @@ function createMockSettingsStore(defaultProjectPath: string | null = null) {
 }
 
 describe('ProjectService', () => {
+  const documentsWorkspace = path.resolve('/mock/documents/DeepChat')
+  const homeWorkspace = path.resolve('/mock/home/DeepChat')
   let sqlitePresenter: ReturnType<typeof createMockSqlitePresenter>
   let deviceService: ReturnType<typeof createMockDeviceService>
   let presenter: ProjectService
@@ -232,24 +235,21 @@ describe('ProjectService', () => {
         vi.fn()
       )
 
-      await expect(presenter.ensureDefaultWorkspace()).resolves.toBe('/mock/documents/DeepChat')
+      await expect(presenter.ensureDefaultWorkspace()).resolves.toBe(documentsWorkspace)
 
-      expect(mkdirSyncMock).toHaveBeenCalledWith('/mock/documents/DeepChat', { recursive: true })
+      expect(mkdirSyncMock).toHaveBeenCalledWith(documentsWorkspace, { recursive: true })
       expect(sqlitePresenter.newProjectsTable.upsert).toHaveBeenCalledWith(
-        '/mock/documents/DeepChat',
+        documentsWorkspace,
         'DeepChat'
       )
       expect(sqlitePresenter.newEnvironmentPreferencesTable.markActive).toHaveBeenCalledWith(
-        '/mock/documents/DeepChat'
+        documentsWorkspace
       )
-      expect(settingsStore.set).toHaveBeenCalledWith(
-        'defaultProjectPath',
-        '/mock/documents/DeepChat'
-      )
+      expect(settingsStore.set).toHaveBeenCalledWith('defaultProjectPath', documentsWorkspace)
     })
 
     it('recreates and registers the built-in workspace when it is already the default', async () => {
-      const settingsStore = createMockSettingsStore('/mock/documents/DeepChat')
+      const settingsStore = createMockSettingsStore(documentsWorkspace)
       presenter = new ProjectService(
         sqlitePresenter,
         sqlitePresenter,
@@ -258,17 +258,14 @@ describe('ProjectService', () => {
         vi.fn()
       )
 
-      await expect(presenter.ensureDefaultWorkspace()).resolves.toBe('/mock/documents/DeepChat')
+      await expect(presenter.ensureDefaultWorkspace()).resolves.toBe(documentsWorkspace)
 
-      expect(mkdirSyncMock).toHaveBeenCalledWith('/mock/documents/DeepChat', { recursive: true })
+      expect(mkdirSyncMock).toHaveBeenCalledWith(documentsWorkspace, { recursive: true })
       expect(sqlitePresenter.newProjectsTable.upsert).toHaveBeenCalledWith(
-        '/mock/documents/DeepChat',
+        documentsWorkspace,
         'DeepChat'
       )
-      expect(settingsStore.set).not.toHaveBeenCalledWith(
-        'defaultProjectPath',
-        '/mock/documents/DeepChat'
-      )
+      expect(settingsStore.set).not.toHaveBeenCalledWith('defaultProjectPath', documentsWorkspace)
     })
 
     it('does not migrate users with a custom default project path', async () => {
@@ -310,7 +307,7 @@ describe('ProjectService', () => {
       const settingsStore = createMockSettingsStore()
       sqlitePresenter.newEnvironmentPreferencesTable.list.mockReturnValue([
         {
-          path: '/mock/documents/DeepChat',
+          path: documentsWorkspace,
           status: 'archived',
           sort_order: 2147483647,
           archived_at: 1000,
@@ -336,7 +333,7 @@ describe('ProjectService', () => {
       const settingsStore = createMockSettingsStore()
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
       mkdirSyncMock.mockImplementation((targetPath: string) => {
-        if (targetPath === '/mock/documents/DeepChat') {
+        if (targetPath === documentsWorkspace) {
           throw new Error('documents denied')
         }
       })
@@ -349,13 +346,13 @@ describe('ProjectService', () => {
       )
 
       try {
-        await expect(presenter.ensureDefaultWorkspace()).resolves.toBe('/mock/home/DeepChat')
+        await expect(presenter.ensureDefaultWorkspace()).resolves.toBe(homeWorkspace)
 
-        expect(mkdirSyncMock).toHaveBeenCalledWith('/mock/documents/DeepChat', { recursive: true })
-        expect(mkdirSyncMock).toHaveBeenCalledWith('/mock/home/DeepChat', { recursive: true })
-        expect(settingsStore.set).toHaveBeenCalledWith('defaultProjectPath', '/mock/home/DeepChat')
+        expect(mkdirSyncMock).toHaveBeenCalledWith(documentsWorkspace, { recursive: true })
+        expect(mkdirSyncMock).toHaveBeenCalledWith(homeWorkspace, { recursive: true })
+        expect(settingsStore.set).toHaveBeenCalledWith('defaultProjectPath', homeWorkspace)
         expect(warnSpy).toHaveBeenCalledWith(
-          '[ProjectService] Failed to create default workspace at /mock/documents/DeepChat:',
+          `[ProjectService] Failed to create default workspace at ${documentsWorkspace}:`,
           expect.any(Error)
         )
       } finally {

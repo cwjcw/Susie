@@ -9,7 +9,7 @@ const readSkill = async () => {
 
 describe('add-provider skill', () => {
   it('declares valid skill front matter', async () => {
-    const content = await readSkill()
+    const content = (await readSkill()).replaceAll('\r\n', '\n')
     const frontMatter = content.match(/^---\n([\s\S]*?)\n---/)
 
     expect(frontMatter).not.toBeNull()

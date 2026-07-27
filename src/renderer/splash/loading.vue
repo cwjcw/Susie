@@ -35,8 +35,7 @@
         <div class="unlock-title">{{ productBrand.appName }}</div>
         <div class="unlock-subtitle">Unlocking local database</div>
         <p class="unlock-hint">
-          {{ productBrand.appName }} is reading the saved password from the system credential
-          store.
+          {{ productBrand.appName }} is reading the saved password from the system credential store.
         </p>
       </div>
     </div>

@@ -364,7 +364,9 @@ describe('LightOcrProcessHost', () => {
   })
 
   it('does not fall back from the explicit bundled Node executable layout', () => {
-    expect(resolveBundledNodeExecutable('/runtime/node', 'darwin')).toBe('/runtime/node/bin/node')
+    expect(resolveBundledNodeExecutable('/runtime/node', 'darwin')).toBe(
+      path.join('/runtime/node', 'bin', 'node')
+    )
     expect(resolveBundledNodeExecutable('C:\\runtime\\node', 'win32')).toBe(
       path.join('C:\\runtime\\node', 'node.exe')
     )
@@ -392,7 +394,12 @@ describe('Light OCR helper input boundary', () => {
     await mkdir(privateRoot, { mode: 0o700 })
     await writeFile(inside, 'inside', { mode: 0o600 })
     await writeFile(outside, 'outside', { mode: 0o600 })
-    await symlink(outside, symlinkPath)
+    try {
+      await symlink(outside, symlinkPath)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EPERM') return
+      throw error
+    }
 
     await expect(resolvePrivateInputPath(privateRoot, inside)).resolves.toBe(await realpath(inside))
     await expect(resolvePrivateInputPath(privateRoot, outside)).rejects.toMatchObject({

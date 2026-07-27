@@ -64,7 +64,10 @@ const runAggregate = (values: Record<string, string>) => {
     workflow.jobs['package-required'],
     'Verify required package checks'
   ).run!
-  return spawnSync('bash', ['-c', script], {
+  const bash = process.platform === 'win32'
+    ? path.join(process.env.ProgramFiles ?? 'C:\\Program Files', 'Git', 'bin', 'bash.exe')
+    : 'bash'
+  return spawnSync(bash, ['-c', script], {
     encoding: 'utf8',
     env: {
       ...process.env,

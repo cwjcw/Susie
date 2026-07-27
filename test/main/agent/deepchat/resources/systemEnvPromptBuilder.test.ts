@@ -1,4 +1,5 @@
 import * as fs from 'node:fs'
+import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import logger from '@shared/logger'
 import { buildSystemEnvPrompt } from '@/agent/deepchat/resources/systemEnvPromptBuilder'
@@ -8,6 +9,10 @@ function fileError(code: string): NodeJS.ErrnoException {
 }
 
 describe('buildSystemEnvPrompt', () => {
+  const missingWorkdir = path.resolve('/tmp/deepchat-env-prompt-missing')
+  const presentWorkdir = path.resolve('/tmp/deepchat-env-prompt-present')
+  const errorWorkdir = path.resolve('/tmp/deepchat-env-prompt-error')
+  const slowWorkdir = path.resolve('/tmp/deepchat-env-prompt-slow')
   beforeEach(() => {
     vi.mocked(fs.existsSync).mockReturnValue(false)
     vi.mocked(fs.promises.readFile).mockReset()
@@ -22,13 +27,13 @@ describe('buildSystemEnvPrompt', () => {
     vi.mocked(fs.promises.readFile).mockRejectedValue(fileError('ENOENT'))
 
     const prompt = await buildSystemEnvPrompt({
-      workdir: '/tmp/deepchat-env-prompt-missing',
+      workdir: missingWorkdir,
       providerId: 'provider',
       modelId: 'model',
       now: new Date('2026-06-22T00:00:00Z')
     })
 
-    expect(prompt).toContain('Working directory: /tmp/deepchat-env-prompt-missing')
+    expect(prompt).toContain(`Working directory: ${missingWorkdir}`)
     expect(prompt).not.toContain('Instructions from:')
     expect(logger.warn).not.toHaveBeenCalledWith(
       '[SystemEnvPromptBuilder] Failed to read AGENTS.md',
@@ -40,13 +45,13 @@ describe('buildSystemEnvPrompt', () => {
     vi.mocked(fs.promises.readFile).mockResolvedValue('Use concise answers.\n')
 
     const prompt = await buildSystemEnvPrompt({
-      workdir: '/tmp/deepchat-env-prompt-present',
+      workdir: presentWorkdir,
       providerId: 'provider',
       modelId: 'model',
       now: new Date('2026-06-22T00:00:00Z')
     })
 
-    expect(prompt).toContain('Instructions from: /tmp/deepchat-env-prompt-present/AGENTS.md')
+    expect(prompt).toContain(`Instructions from: ${path.join(presentWorkdir, 'AGENTS.md')}`)
     expect(prompt).toContain('Use concise answers.')
   })
 
@@ -54,7 +59,7 @@ describe('buildSystemEnvPrompt', () => {
     vi.mocked(fs.promises.readFile).mockRejectedValue(fileError('EISDIR'))
 
     const prompt = await buildSystemEnvPrompt({
-      workdir: '/tmp/deepchat-env-prompt-error',
+      workdir: errorWorkdir,
       providerId: 'provider',
       modelId: 'model',
       now: new Date('2026-06-22T00:00:00Z')
@@ -62,7 +67,7 @@ describe('buildSystemEnvPrompt', () => {
 
     expect(prompt).not.toContain('Instructions from:')
     expect(logger.warn).toHaveBeenCalledWith('[SystemEnvPromptBuilder] Failed to read AGENTS.md', {
-      sourcePath: '/tmp/deepchat-env-prompt-error/AGENTS.md',
+      sourcePath: path.join(errorWorkdir, 'AGENTS.md'),
       code: 'EISDIR',
       message: 'EISDIR mock error'
     })
@@ -78,7 +83,7 @@ describe('buildSystemEnvPrompt', () => {
     )
 
     const promptPromise = buildSystemEnvPrompt({
-      workdir: '/tmp/deepchat-env-prompt-slow',
+      workdir: slowWorkdir,
       providerId: 'provider',
       modelId: 'model',
       now: new Date('2026-06-22T00:00:00Z')
@@ -89,7 +94,7 @@ describe('buildSystemEnvPrompt', () => {
 
     expect(prompt).not.toContain('Instructions from:')
     expect(logger.warn).toHaveBeenCalledWith('[SystemEnvPromptBuilder] AGENTS.md read deferred', {
-      sourcePath: '/tmp/deepchat-env-prompt-slow/AGENTS.md',
+      sourcePath: path.join(slowWorkdir, 'AGENTS.md'),
       budgetMs: 200
     })
 
@@ -98,7 +103,7 @@ describe('buildSystemEnvPrompt', () => {
     await Promise.resolve()
 
     const cachedPrompt = await buildSystemEnvPrompt({
-      workdir: '/tmp/deepchat-env-prompt-slow',
+      workdir: slowWorkdir,
       providerId: 'provider',
       modelId: 'model',
       now: new Date('2026-06-22T00:00:00Z')

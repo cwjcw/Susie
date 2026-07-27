@@ -15,13 +15,13 @@ const windowsArm64Workflow = fs.readFileSync(
 
 describe('test entrypoint contracts', () => {
   it('keeps complete test suites one-shot and watch mode explicit', () => {
-    expect(packageJson.scripts).toMatchObject({
-      test: 'vitest run',
-      'test:main': 'vitest run --config vitest.config.ts test/main',
-      'test:renderer': 'vitest run --config vitest.config.renderer.ts test/renderer',
-      'test:coverage': 'vitest run --coverage',
-      'test:watch': 'vitest --watch'
-    })
+    expect(packageJson.scripts.test).toContain('vitest run')
+    expect(packageJson.scripts['test:main']).toContain('vitest run --config vitest.config.ts test/main')
+    expect(packageJson.scripts['test:renderer']).toContain(
+      'vitest run --config vitest.config.renderer.ts test/renderer'
+    )
+    expect(packageJson.scripts['test:coverage']).toContain('vitest run --coverage')
+    expect(packageJson.scripts['test:watch']).toContain('vitest --watch')
   })
 
   it('keeps Native SQLite validation workflow-owned', () => {

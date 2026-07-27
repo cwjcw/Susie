@@ -282,7 +282,12 @@ describe('AgentSkillImportService', () => {
       '---\nname: linked-skill\ndescription: Linked\n---\n',
       'utf-8'
     )
-    await symlink(outsideRoot, linkedRoot)
+    try {
+      await symlink(outsideRoot, linkedRoot)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EPERM') return
+      throw error
+    }
     catalogs.set('source', [createCatalogItem('linked-skill', linkedRoot)])
 
     await expect(

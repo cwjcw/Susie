@@ -54,10 +54,7 @@
           </Button>
         </div>
 
-        <div
-          v-if="recentSessions.length > 0"
-          class="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
-        >
+        <div v-if="recentSessions.length > 0" class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           <button
             v-for="session in recentSessions"
             :key="session.id"

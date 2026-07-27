@@ -51,7 +51,12 @@ describe('AcpFsHandler', () => {
       const outsideFile = path.join(os.tmpdir(), `acp-outside-${Date.now()}.txt`)
       const linkPath = path.join(testDir, 'outside-link.txt')
       await fs.writeFile(outsideFile, 'outside')
-      await fs.symlink(outsideFile, linkPath)
+      try {
+        await fs.symlink(outsideFile, linkPath)
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EPERM') return
+        throw error
+      }
 
       try {
         await expect(
@@ -245,7 +250,12 @@ describe('AcpFsHandler', () => {
       const outsideFile = path.join(os.tmpdir(), `acp-outside-write-${Date.now()}.txt`)
       const linkPath = path.join(testDir, 'outside-write-link.txt')
       await fs.writeFile(outsideFile, 'outside')
-      await fs.symlink(outsideFile, linkPath)
+      try {
+        await fs.symlink(outsideFile, linkPath)
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EPERM') return
+        throw error
+      }
 
       try {
         await expect(

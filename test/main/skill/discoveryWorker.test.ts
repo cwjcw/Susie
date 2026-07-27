@@ -89,7 +89,7 @@ describe('discoverSkillMetadataInWorker', () => {
     const path = await vi.importActual<typeof import('node:path')>('node:path')
     const skillsDir = path.resolve(process.cwd(), 'resources/skills')
     const skillPath = path.join(skillsDir, 'memory-management', 'SKILL.md')
-    const raw = fs.readFileSync(skillPath, 'utf-8')
+    const raw = fs.readFileSync(skillPath, 'utf-8').replaceAll('\r\n', '\n')
     const frontmatter = raw.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? ''
     const body = raw.replace(/^---\n[\s\S]*?\n---\n?/, '')
 

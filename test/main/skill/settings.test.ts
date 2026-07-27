@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import path from 'node:path'
 import { app } from 'electron'
 import { SkillSettings } from '@/skill/settings'
 
@@ -20,7 +21,7 @@ describe('SkillSettings', () => {
 
     expect(settings.isEnabled()).toBe(true)
     expect(settings.isDraftSuggestionsEnabled()).toBe(false)
-    expect(settings.getPath()).toBe('/home/tester/.deepchat/skills')
+    expect(settings.getPath()).toBe(path.join('/home/tester', '.deepchat', 'skills'))
   })
 
   it('reads and writes Skill-owned settings', () => {

@@ -1428,7 +1428,7 @@ describe('PluginService', () => {
     expect(macosPackageWorkflow).toContain(
       'pnpm run smoke:duckdb:vss -- --platform darwin --arch "${TARGET_ARCH}" --extension-base64-path "${extension_path}"'
     )
-    expect(windowsPackageWorkflow).toContain(
+    expect(windowsPackageWorkflow.replaceAll('\r\n', '\n')).toContain(
       '- name: Build and package Windows\n        shell: bash'
     )
     expect(windowsPackageWorkflow).toContain('Verify bundled plugins')

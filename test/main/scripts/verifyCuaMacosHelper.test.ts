@@ -194,7 +194,12 @@ describe('verify-cua-macos-helper', () => {
       mkdir(outsidePath)
     ])
     await writeFile(executablePath, Buffer.from('cffaedfe00000000', 'hex'))
-    await symlink(outsidePath, path.join(resourcesPath, 'External.framework'))
+    try {
+      await symlink(outsidePath, path.join(resourcesPath, 'External.framework'))
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EPERM') return
+      throw error
+    }
 
     await expect(
       inspectCuaHelperBundle(helperAppPath, {

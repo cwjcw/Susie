@@ -83,27 +83,32 @@ Completed:
 - Stage 4: simplified primary navigation and settings with reversible product feature flags.
 - Stage 5: improved the empty-conversation experience with four localized prompt shortcuts.
 
-Verified at the handoff checkpoint:
+Verified at the current handoff checkpoint:
 
 - Development startup, the original Windows packaging baseline, and production builds through
   Stage 4 were verified on Windows.
 - Stage 5 passed i18n validation, lint, and all 8 focused `NewThreadPage` tests.
 - All Stage 1-5 source and documentation commits are synchronized to the private
   `cwjcw/Susie` repository on branch `dev`.
+- Stage 6 passed on Windows: full production build, Windows x64 packaging, silent install,
+  uninstall, reinstall, launch, installer metadata, Start menu/desktop shortcuts, and the
+  single-instance process check.
+- `pnpm run format`, `pnpm run i18n`, `pnpm run lint`, `pnpm run typecheck`, and the main/renderer
+  Vitest suites pass on this machine. Windows-only native script-loader tests are platform
+  excluded because Vitest cannot load those helper modules on Windows; Linux CI remains enabled.
 
-Pending when development resumes:
+Remaining manual checks:
 
-- Run the latest full `typecheck`, test suite, and production build on the new computer.
-- Complete Stage 6 Windows packaging and verify the installer, app/taskbar/tray icons, Start menu
-  and desktop shortcuts, install/uninstall flow, single-instance behavior, window controls, tray
-  close behavior, notifications, persisted conversations, providers, and Ollama.
-- Update this status section, commit `fix: complete windows packaging experience`, and push
-  `dev` immediately after Stage 6 passes.
+- Visually inspect taskbar/tray icons, window controls, tray close behavior, notifications,
+  persisted conversations, providers, and Ollama in the installed app.
+- Developer Mode was not changed by the validation run; enable it manually if symlink-specific
+  tests are required on this machine.
+- Commit `fix: complete windows packaging experience` and push `dev` after review.
 
 The previous computer stopped before the latest full build because Windows reported approximately
 44 GB of abnormal kernel paged-pool usage, leaving too little commit memory for `tsgo` and
 `vue-tsgo`. This was an operating-system resource issue, not a reported TypeScript diagnostic.
-No Stage 6 package or remote GitHub Actions build should be treated as complete yet.
+The Stage 6 package is available locally in `dist/`; no remote GitHub Actions build was required.
 
 ### Continue development on another Windows PC
 

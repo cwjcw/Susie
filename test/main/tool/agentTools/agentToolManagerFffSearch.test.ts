@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import path from 'node:path'
 import { AgentToolManager } from '@/tool/agentTools/agentToolManager'
 import { GLOB_TOOL_NAME, GREP_TOOL_NAME } from '@/tool/agentTools/agentFffSearchHandler'
 import { createAgentToolDependencies } from './agentToolDependencies'
@@ -219,7 +220,7 @@ describe('AgentToolManager FFF search tools', () => {
       expect.objectContaining({
         needsPermission: true,
         permissionType: 'read',
-        paths: ['/outside/example.ts']
+        paths: [path.resolve('/outside/example.ts')]
       })
     )
   })

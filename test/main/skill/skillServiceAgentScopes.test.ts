@@ -144,7 +144,7 @@ describe('SkillService Agent scopes', () => {
     vi.spyOn(service as any, 'copyDirectory').mockImplementation(
       (source: string, target: string) => {
         copyDirectory(source, target)
-        if (target.includes('/.install-review-')) {
+        if (target.replaceAll('\\', '/').includes('/.install-review-')) {
           writeSkill(writerRoot, 'review', '# concurrent winner')
         }
       }

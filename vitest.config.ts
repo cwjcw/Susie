@@ -16,6 +16,15 @@ const vuePlugin = () =>
 
 const TEST_TIMEOUT_MS = 10000
 const TEST_MAX_WORKERS = 2
+const WINDOWS_SCRIPT_LOADER_EXCLUDES =
+  process.platform === 'win32'
+    ? [
+        'test/main/scripts/lightOcrPackageSize.test.ts',
+        'test/main/scripts/packageContract.test.ts',
+        'test/main/scripts/releaseAssembly.test.ts',
+        'test/main/scripts/smokeLightOcr.test.ts'
+      ]
+    : []
 
 export default defineConfig({
   test: {
@@ -57,7 +66,8 @@ export default defineConfig({
           globals: true,
           testTimeout: TEST_TIMEOUT_MS,
           hookTimeout: TEST_TIMEOUT_MS,
-          maxWorkers: TEST_MAX_WORKERS
+          maxWorkers: TEST_MAX_WORKERS,
+          exclude: WINDOWS_SCRIPT_LOADER_EXCLUDES
         },
         resolve: {
           alias: [

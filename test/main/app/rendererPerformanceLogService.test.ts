@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import path from 'node:path'
 import { RendererPerformanceLogService } from '@/app/rendererPerformanceLogService'
 
 const createFs = (overrides: Record<string, unknown> = {}) => ({
@@ -21,11 +22,13 @@ const validRecord = {
 }
 
 describe('RendererPerformanceLogService', () => {
+  const userData = '/user-data'
+
   it('does not create a diagnostics file when local logging is disabled', async () => {
     const fs = createFs()
     const service = new RendererPerformanceLogService(
       { get: vi.fn(() => false) } as never,
-      () => '/user-data',
+      () => userData,
       fs
     )
 
@@ -37,16 +40,16 @@ describe('RendererPerformanceLogService', () => {
     const fs = createFs()
     const service = new RendererPerformanceLogService(
       { get: vi.fn(() => true) } as never,
-      () => '/user-data',
+      () => userData,
       fs,
       () => 1234
     )
 
     await expect(service.record(validRecord)).resolves.toBe(true)
 
-    expect(fs.mkdir).toHaveBeenCalledWith('/user-data/logs', { recursive: true })
+    expect(fs.mkdir).toHaveBeenCalledWith(path.join(userData, 'logs'), { recursive: true })
     expect(fs.appendFile).toHaveBeenCalledWith(
-      '/user-data/logs/renderer-performance.ndjson',
+      path.join(userData, 'logs', 'renderer-performance.ndjson'),
       `${JSON.stringify({ ...validRecord, recordedAt: 1234 })}\n`,
       'utf-8'
     )
@@ -56,7 +59,7 @@ describe('RendererPerformanceLogService', () => {
     const fs = createFs()
     const service = new RendererPerformanceLogService(
       { get: vi.fn(() => true) } as never,
-      () => '/user-data',
+      () => userData,
       fs
     )
 
@@ -84,7 +87,7 @@ describe('RendererPerformanceLogService', () => {
       })
     const service = new RendererPerformanceLogService(
       { get: vi.fn(() => true) } as never,
-      () => '/user-data',
+      () => userData,
       createFs({ appendFile })
     )
 
@@ -107,10 +110,12 @@ describe('RendererPerformanceLogService', () => {
 
     await expect(service.record(validRecord)).resolves.toBe(true)
 
-    expect(fs.unlink).toHaveBeenCalledWith('/user-data/logs/renderer-performance.ndjson.old')
+    expect(fs.unlink).toHaveBeenCalledWith(
+      path.join(userData, 'logs', 'renderer-performance.ndjson.old')
+    )
     expect(fs.rename).toHaveBeenCalledWith(
-      '/user-data/logs/renderer-performance.ndjson',
-      '/user-data/logs/renderer-performance.ndjson.old'
+      path.join(userData, 'logs', 'renderer-performance.ndjson'),
+      path.join(userData, 'logs', 'renderer-performance.ndjson.old')
     )
   })
 
@@ -118,7 +123,7 @@ describe('RendererPerformanceLogService', () => {
     const onWriteError = vi.fn()
     const service = new RendererPerformanceLogService(
       { get: vi.fn(() => true) } as never,
-      () => '/user-data',
+      () => userData,
       createFs({ appendFile: vi.fn().mockRejectedValue(new Error('disk unavailable')) }),
       Date.now,
       onWriteError

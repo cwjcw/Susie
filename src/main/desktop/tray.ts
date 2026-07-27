@@ -1,4 +1,11 @@
-import { Tray, Menu, app, nativeImage, NativeImage, type MenuItemConstructorOptions } from 'electron'
+import {
+  Tray,
+  Menu,
+  app,
+  nativeImage,
+  NativeImage,
+  type MenuItemConstructorOptions
+} from 'electron'
 import * as path from 'path'
 import { getContextMenuLabels } from '@shared/i18n'
 import type { IWindowPresenter } from '@shared/types/desktop'

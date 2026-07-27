@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import path from 'node:path'
 import type { SettingsDatabase } from '@/settings/data/database'
 import type { AppSettingsTable } from '@/settings/data/tables/appSettingsTable'
 import type { ProviderDatabase } from '@/provider/data/database'
@@ -51,7 +52,7 @@ describe('config storage migration', () => {
       hooksNotifications: { enabled: true }
     })
     const settings = new SettingsStore(legacyStore)
-    electronStores.set('/user-data/provider_models/models_openai', {
+    electronStores.set(`${path.join('/user-data', 'provider_models')}/models_openai`, {
       models: [{ id: 'gpt-4', providerId: 'openai' }],
       custom_models: [{ id: 'custom', providerId: 'openai' }]
     })
