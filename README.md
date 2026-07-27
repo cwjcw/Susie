@@ -101,6 +101,8 @@ Remaining manual checks:
 
 - Visually inspect taskbar/tray icons, window controls, tray close behavior, notifications,
   persisted conversations, providers, and Ollama in the installed app.
+- Runtime evidence confirms database/provider initialization, persisted DeepChat user data, and
+  single-instance enforcement in `logs/main.log`; this machine does not have Ollama installed.
 - Developer Mode was not changed by the validation run; enable it manually if symlink-specific
   tests are required on this machine.
 - Commit `fix: complete windows packaging experience` and push `dev` after review.
