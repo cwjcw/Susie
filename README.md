@@ -1,3 +1,45 @@
+# Kainice AI 开发交接记录
+
+> GitHub 私有仓库：`https://github.com/cwjcw/Susie`  
+> 当前开发分支：`dev`  
+> 上游仓库：`https://github.com/ThinkInAIXYZ/deepchat.git`
+
+## 已完成
+
+- [x] 阶段 1：确认 Node、pnpm、Electron 开发启动、生产构建和 Windows 打包基线。
+- [x] 阶段 2：建立统一品牌配置，完成应用名称、窗口、托盘、About、图标和安装程序品牌替换。
+- [x] 阶段 3：新增 Kainice AI 产品首页、快捷入口和最近对话。
+- [x] 阶段 4：简化左侧导航和设置页，通过 Feature Flag 隐藏高级功能入口。
+- [x] 阶段 5：改进空会话欢迎页，增加总结、写作、文件分析和自由对话快捷卡片。
+- [x] 配置 `origin` 为 Kainice `Susie` 仓库，配置 `upstream` 为 DeepChat 官方仓库。
+- [x] 阶段 1–5 的代码和文档已同步到 GitHub `dev` 分支。
+
+## 尚未完成
+
+- [ ] 在新电脑运行最新完整 `typecheck`、测试套件和 production build。
+- [ ] 完成阶段 6 Windows x64 安装包构建。
+- [ ] 验证安装、卸载、开始菜单、桌面快捷方式、应用/任务栏/托盘图标。
+- [ ] 验证单实例、窗口最小化/最大化/关闭、托盘关闭行为和 Windows 通知。
+- [ ] 验证 Provider、Ollama、附件、聊天保存以及重启后恢复。
+- [ ] 阶段 6 通过后提交 `fix: complete windows packaging experience` 并立即推送 `dev`。
+
+## 在新电脑继续
+
+```powershell
+git clone https://github.com/cwjcw/Susie.git
+Set-Location Susie
+git switch dev
+corepack enable
+pnpm install
+pnpm run installRuntime
+pnpm run dev
+```
+
+完整环境要求、代理设置、验证命令和技术说明见下方
+[Continue development on another Windows PC](#continue-development-on-another-windows-pc)。
+
+---
+
 <p align='center'>
 <img src='./build/icon.png' width="150" height="150" alt="DeepChat AI Assistant Icon" />
 </p>
